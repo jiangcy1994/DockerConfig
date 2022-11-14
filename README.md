@@ -20,4 +20,6 @@
 
 conainer-name和hostname都加了后缀，要改的话顺便吧nginx反向代理也改了
 
+servarrs全家桶(lidarr、radarr、readarr、sonarr、whisparr、prolarr)记得加UrlBase，要改的话顺便吧nginx反向代理也改了
+
 media-center里面的一堆配置文件没进来
