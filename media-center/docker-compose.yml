@@ -1,0 +1,253 @@
+version: "3"
+
+services:
+  ###
+  # 统一管理入口
+
+  nginx:
+    image: ${REGISTRY_SERVER:-}linuxserver/nginx
+    container_name: nginx${APPENDIX}
+    hostname: nginx${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    networks:
+      - media
+    ports:
+      - 80:80
+    volumes:
+      - ${CONFIG_DIR}/nginx:/config/nginx
+      - ${DATA_DIR}/nginx:/config/www
+
+  # 统一管理入口
+  ###
+  # 影片播放
+
+  jellyfin:
+    image: ${REGISTRY_SERVER:-}hotio/jellyfin
+    container_name: jellyfin${APPENDIX}
+    hostname: jellyfin${APPENDIX}
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    env_file:
+      - ./common.env
+    expose:
+      - 8096
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/jellyfin:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # 影片播放
+  ###
+  # 下载
+
+  qbittorrent:
+    image: ${REGISTRY_SERVER:-}hotio/qbittorrent
+    container_name: qbittorrent${APPENDIX}
+    hostname: qbittorrent${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 8080
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/qbittorrent:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  qbittorrent-ee:
+    image: ${REGISTRY_SERVER:-}johngong/qbittorrent:latest
+    container_name: qbittorrent-ee${APPENDIX}
+    hostname: qbittorrent-ee${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    environment:
+      - QB_EE_BIN=true
+    expose:
+      - 8989
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/qbittorrent-ee/config:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  nzbget:
+    image: ${REGISTRY_SERVER:-}hotio/nzbget
+    container_name: nzbget${APPENDIX}
+    hostname: nzbget${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 6789
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/nzbget:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # 下载
+  ###
+  ## 资源请求与整理
+
+  # Music
+  lidarr:
+    image: ${REGISTRY_SERVER:-}hotio/lidarr
+    container_name: lidarr${APPENDIX}
+    hostname: lidarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 8686
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/lidarr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # Movies
+  radarr:
+    image: ${REGISTRY_SERVER:-}hotio/radarr
+    container_name: radarr${APPENDIX}
+    hostname: radarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 7878
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/radarr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # Books
+  readarr:
+    image: ${REGISTRY_SERVER:-}hotio/readarr
+    container_name: readarr${APPENDIX}
+    hostname: readarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 8787
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/readarr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # TV
+  sonarr:
+    image: ${REGISTRY_SERVER:-}hotio/sonarr
+    container_name: sonarr${APPENDIX}
+    hostname: sonarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 8989
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/sonarr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # XXX
+  whisparr:
+    image: ${REGISTRY_SERVER:-}hotio/whisparr
+    container_name: whisparr${APPENDIX}
+    hostname: whisparr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 6969
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/whisparr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  ## 资源请求与整理
+  ###
+  # Indexer维护
+
+  prowlarr:
+    image: ${REGISTRY_SERVER:-}hotio/prowlarr
+    container_name: prowlarr${APPENDIX}
+    hostname: prowlarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 9696
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/prowlarr:/config
+
+  flaresolverr:
+    image: ${REGISTRY_SERVER:-}flaresolverr/flaresolverr
+    hostname: flaresolverr${APPENDIX}
+    container_name: flaresolverr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./flaresolverr/.env
+    expose:
+      - 8191
+    networks:
+      - media
+
+  # Indexer维护
+  ###
+  # 字幕
+
+  bazarr:
+    image: ${REGISTRY_SERVER:-}hotio/bazarr
+    hostname: bazarr${APPENDIX}
+    container_name: bazarr${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 6767
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/bazarr:/config
+      - ${MEDIA_CENTER_DIR}:/data
+
+  chinesesubfinder:
+    image: ${REGISTRY_SERVER:-}allanpk716/chinesesubfinder:latest
+    hostname: chinesesubfinder${APPENDIX}
+    container_name: chinesesubfinder${APPENDIX}
+    restart: unless-stopped
+    env_file:
+      - ./common.env
+    expose:
+      - 19035
+      - 19037
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "100m"
+    networks:
+      - media
+    volumes:
+      - ${CONFIG_DIR}/chinesesubfinder:/config
+      - ${DATA_DIR}/chinesesubfinder:/root/.cache/rod/browser
+      - ${MEDIA_CENTER_DIR}:/data
+
+  # 字幕
+  ###
+
+networks:
+  media:
+    external: true
