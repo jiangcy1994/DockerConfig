@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  frpc:
+    image: ${REGISTRY_SERVER:-}snowdreamtech/frpc
+    container_name: frpc
+    hostname: frpc
+    restart: always
+    network_mode: "host"
+    volumes:
+      - ${FRPC_FILE_DIR}/frpc.ini:/etc/frp/frpc.ini
