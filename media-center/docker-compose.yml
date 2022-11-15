@@ -4,10 +4,10 @@ services:
   ###
   # 统一管理入口
 
-  nginx:
-    image: ${REGISTRY_SERVER:-}linuxserver/nginx
-    container_name: nginx${APPENDIX}
-    hostname: nginx${APPENDIX}
+  heimdall:
+    image: ${REGISTRY_SERVER:-}linuxserver/heimdall
+    container_name: heimdall${APPENDIX}
+    hostname: heimdall${APPENDIX}
     restart: unless-stopped
     env_file:
       - ./common.env
@@ -16,8 +16,8 @@ services:
     ports:
       - 80:80
     volumes:
-      - ${CONFIG_DIR}/nginx:/config/nginx
-      - ${DATA_DIR}/nginx:/config/www
+      - ${CONFIG_DIR}/heimdall:/config/nginx
+      - ${DATA_DIR}/heimdall:/config/www
 
   # 统一管理入口
   ###
